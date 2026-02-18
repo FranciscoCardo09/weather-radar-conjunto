@@ -1,0 +1,1 @@
+export { default as component } from "../../../../src/routes/weather/[city_id]/+page.svelte";
