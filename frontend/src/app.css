@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+:root {
+  /* Yale blue palette */
+  --yale-blue: #1b4079;
+  --yale-blue-soft: #1b407915;
+  --yale-blue-medium: #1b407930;
+
+  /* Airforce / Cambridge palette */
+  --airforce-blue: #4d7c8a;
+  --airforce-soft: #4d7c8a20;
+  --cambridge-blue: #7f9c96;
+  --cambridge-green: #8fad88;
+
+  /* Accent */
+  --accent-primary: #3b82f6;
+  --accent-primary-soft: #3b82f620;
+  --accent-orange: #f59e0b;
+  --accent-pink: #f472b6;
+  --accent-red: #ef4444;
+  --accent-teal: #14b8a6;
+
+  /* Mindaro */
+  --mindaro: #cbdf90;
+  --mindaro-soft: #cbdf9030;
+
+  /* Home screen – light defaults */
+  --home-bg: #f7f9f7;
+  --home-header-bg: #1b4079;
+  --home-card-bg: #ffffff;
+  --home-card-hover-bg: #f0f5f3;
+  --home-border: #e2ebe7;
+  --home-text-dark: #1b4079;
+  --home-text-medium: #4d7c8a;
+  --home-text-light: #7f9c96;
+
+  /* Theme-aware – light defaults */
+  --bg-page: #ffffff;
+  --bg-card: #f4f4f5;
+  --bg-elevated: #e4e4e7;
+  --border-standard: #e4e4e7;
+  --text-primary: #18181b;
+  --text-secondary: #71717a;
+  --text-tertiary: #a1a1aa;
+  --text-muted: #d4d4d8;
+  --metric-card-bg: #ffffff;
+  --rank-first-bg: #fef3c7;
+
+  /* Icon backgrounds – light */
+  --icon-bg-blue: #dbeafe;
+  --icon-bg-green: #dcfce7;
+  --icon-bg-purple: #f3e8ff;
+  --icon-bg-yellow: #fef3c7;
+
+  /* Status colors */
+  --color-success: #22c55e;
+  --color-success-soft: #dcfce7;
+  --color-error: #ef4444;
+  --color-error-soft: #fee2e2;
+  --color-warning: #f59e0b;
+  --color-warning-soft: #fef3c7;
+
+  /* Chip */
+  --chip-unselected-border: #e4e4e7;
+  --chip-unselected-text: #71717a;
+  --accent-red-soft: #fee2e2;
+}
+
+.dark {
+  /* Home screen – dark overrides */
+  --home-bg: #0f0f11;
+  --home-card-bg: #1a1a1f;
+  --home-card-hover-bg: #27272a;
+  --home-border: #27272a;
+  --home-text-dark: #f4f4f5;
+  --home-text-medium: #a1a1aa;
+  --home-text-light: #71717a;
+
+  /* Theme-aware – dark overrides */
+  --bg-page: #0f0f11;
+  --bg-card: #1a1a1f;
+  --bg-elevated: #27272a;
+  --border-standard: #27272a;
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a;
+  --text-muted: #3f3f46;
+  --metric-card-bg: #27272a;
+  --rank-first-bg: #78350f;
+
+  /* Icon backgrounds – dark */
+  --icon-bg-blue: #1e3a5f;
+  --icon-bg-green: #14532d;
+  --icon-bg-purple: #3b0764;
+  --icon-bg-yellow: #78350f;
+
+  /* Status colors – dark */
+  --color-error: #f87171;
+  --color-error-soft: #7f1d1d;
+  --color-success-soft: #14532d;
+  --color-warning-soft: #78350f;
+
+  /* Accent soft – dark */
+  --accent-primary-soft: #3b82f630;
+
+  /* Chip – dark */
+  --chip-unselected-border: #3f3f46;
+  --chip-unselected-text: #a1a1aa;
+  --accent-red-soft: #7f1d1d;
+}
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
+
+  .font-display {
+    font-family: "Plus Jakarta Sans", sans-serif;
+  }
+
+  .font-body {
+    font-family: "Inter", sans-serif;
+  }
+}
