@@ -2,6 +2,8 @@
   import { page } from '$app/stores'
   import { Moon, Sun, CloudSun } from 'lucide-svelte'
   import { modoOscuro, cambiarTema } from '$lib/stores/theme'
+  import { slide } from 'svelte/transition'
+  import { cubicInOut } from 'svelte/easing'
 
   interface Props {
     variant?: 'home' | 'standard'
@@ -12,7 +14,7 @@
   // ver en qué página estamos
   const estaEnHome = $derived($page.url.pathname === '/')
   const estaEnComparar = $derived($page.url.pathname === '/compare')
-  
+
   // mostrar header azul solo si es 'home' y NO está en modo oscuro
   const mostrarHeaderOscuro = $derived(variant === 'home' && !$modoOscuro)
 </script>
@@ -35,18 +37,26 @@
     </div>
 
     <!-- Nav -->
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 relative">
+      <!-- Indicador animado de pestaña activa -->
+      <div
+        class="absolute h-[38px] bg-white/[0.12] rounded-lg transition-all duration-300 ease-in-out"
+        style="
+          width: {estaEnHome ? '92px' : '92px'};
+          transform: translateX({estaEnHome ? '0px' : '100px'});
+        "
+      ></div>
       <a
         href="/"
-        class="font-body text-sm font-medium text-white px-4 py-2 rounded-lg transition-colors"
-        style={estaEnHome ? 'background-color: rgba(255,255,255,0.12);' : ''}
+        class="font-body text-sm font-medium text-white px-4 py-2 rounded-lg relative z-10 transition-all duration-300 hover:scale-105 w-[92px] text-center"
+        class:scale-105={estaEnHome}
       >
         Ciudades
       </a>
       <a
         href="/compare"
-        class="font-body text-sm font-medium text-white px-4 py-2 rounded-lg transition-colors"
-        style={estaEnComparar ? 'background-color: rgba(255,255,255,0.12);' : ''}
+        class="font-body text-sm font-medium text-white px-4 py-2 rounded-lg relative z-10 transition-all duration-300 hover:scale-105 w-[92px] text-center"
+        class:scale-105={estaEnComparar}
       >
         Comparar
       </a>
@@ -82,20 +92,31 @@
     </div>
 
     <!-- Navegación -->
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 relative">
+      <!-- Indicador animado de pestaña activa -->
+      <div
+        class="absolute h-[38px] rounded-[10px] transition-all duration-300 ease-in-out"
+        style="
+          background-color: {estaEnComparar ? 'var(--accent-primary-soft)' : 'var(--bg-card)'};
+          width: {estaEnHome ? '92px' : '92px'};
+          transform: translateX({estaEnHome ? '0px' : '100px'});
+        "
+      ></div>
       <a
         href="/"
-        class="font-body text-sm font-medium text-[var(--text-secondary)] px-4 py-2 rounded-[10px] transition-colors hover:bg-[var(--bg-card)]"
-        class:bg-[var(--bg-card)]={estaEnHome}
+        class="font-body text-sm font-medium px-4 py-2 rounded-[10px] relative z-10 transition-all duration-300 hover:scale-105 w-[92px] text-center"
         class:text-[var(--text-primary)]={estaEnHome}
+        class:text-[var(--text-secondary)]={!estaEnHome}
+        class:scale-105={estaEnHome}
       >
         Ciudades
       </a>
       <a
         href="/compare"
-        class="font-body text-sm font-medium text-[var(--text-secondary)] px-4 py-2 rounded-[10px] transition-colors hover:bg-[var(--bg-card)]"
-        class:bg-[var(--accent-primary-soft)]={estaEnComparar}
+        class="font-body text-sm font-medium px-4 py-2 rounded-[10px] relative z-10 transition-all duration-300 hover:scale-105 w-[92px] text-center"
         class:text-[var(--accent-primary)]={estaEnComparar}
+        class:text-[var(--text-secondary)]={!estaEnComparar}
+        class:scale-105={estaEnComparar}
       >
         Comparar
       </a>

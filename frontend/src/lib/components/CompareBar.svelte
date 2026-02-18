@@ -28,7 +28,7 @@
     onclick={onCompare}
     disabled={deshabilitado}
     type="button"
-    class="flex items-center gap-2 text-white rounded-[10px] px-6 py-[10px] font-body text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+    class="flex items-center gap-2 text-white rounded-[10px] px-6 py-[10px] font-body text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
     style="background-color: var(--yale-blue);"
   >
     <ArrowRight size={16} />

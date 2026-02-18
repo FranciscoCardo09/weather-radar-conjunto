@@ -126,7 +126,7 @@
                 ? 'background-color: var(--yale-blue); color: white; border-color: var(--yale-blue);'
                 : 'background-color: transparent; color: var(--chip-unselected-text); border-color: var(--chip-unselected-border);'}
             >
-              {#if isSelected}✓ {/if}{city.name}
+{city.name}
             </button>
           {/each}
         </div>
