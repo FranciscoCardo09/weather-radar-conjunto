@@ -1,7 +1,6 @@
 <script lang="ts">
   import { MapPin, Globe, Navigation } from 'lucide-svelte'
   import type { City } from '$lib/types'
-  import { modoOscuro } from '$lib/stores/theme'
 
   interface Props {
     city: City
@@ -47,22 +46,18 @@
   <div class="flip-card-inner">
     <!-- Front: Default card -->
     <div
-      class="flip-card-front rounded-[20px] p-5 flex flex-col gap-[6px] w-full relative shadow-lg transition-all duration-300"
-      style="{$modoOscuro 
-        ? 'background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);' 
-        : 'background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);'}"
+      class="flip-card-front bg-[var(--bg-card)] rounded-[16px] p-5 flex flex-col gap-[6px] w-full relative shadow-sm border border-[var(--border-standard)]"
     >
       <!-- Content -->
       <div class="flex flex-col gap-[6px] w-full">
         <button
           onclick={onToggle}
           type="button"
-          class="font-display font-bold text-base text-left cursor-pointer transition-colors"
-          style="color: {$modoOscuro ? '#f1f5f9' : 'white'};"
+          class="font-display font-bold text-base text-[var(--text-primary)] text-left cursor-pointer hover:text-[var(--accent-primary)] transition-colors"
         >
           {city.name}
         </button>
-        <span class="font-body text-[12px]" style="color: {$modoOscuro ? '#cbd5e1' : 'white'};">
+        <span class="font-body text-[12px] text-[var(--text-secondary)]">
           {formatearCoordenadas(city.latitude, city.longitude)}
         </span>
         <a
@@ -70,17 +65,20 @@
           class="flex items-center gap-1 mt-3"
           onclick={(e) => e.stopPropagation()}
         >
-          <MapPin size={11} style="color: {$modoOscuro ? '#94a3b8' : 'white'};" />
-          <span class="font-body text-[12px] font-medium" style="color: {$modoOscuro ? '#94a3b8' : 'white'};">Ver clima →</span>
+          <MapPin size={11} class="text-[var(--text-tertiary)]" />
+          <span class="font-body text-[12px] font-medium text-[var(--accent-primary)]">Ver clima →</span>
         </a>
       </div>
+
+      <!-- Barra decorativa inferior -->
+      <div class="absolute bottom-0 left-0 right-0 h-2 rounded-b-[16px]" style="background-color: var(--accent-primary);"></div>
     </div>
 
     <!-- Back: Imagen de ciudad (clickeable completo) -->
     <button
       onclick={onToggle}
       type="button"
-      class="flip-card-back relative rounded-[14px] overflow-hidden cursor-pointer text-left w-full border-transparent shadow-lg"
+      class="flip-card-back relative rounded-[16px] overflow-hidden cursor-pointer text-left w-full border-transparent shadow-sm"
       style="background-image: url('{obtenerImagenDeCiudad(city.id)}'); background-size: cover; background-position: center;"
       aria-pressed={selected}
       aria-label="{selected ? 'Deseleccionar' : 'Seleccionar'} {city.name}"
@@ -93,7 +91,7 @@
             {selected ? 'Seleccionada' : 'Ubicación'}
           </span>
         </div>
-        
+
         <div>
           <h3 class="font-display font-bold text-base text-white mb-2 drop-shadow-lg">{city.name}</h3>
           <span class="font-body text-[12px] text-white font-medium drop-shadow">
