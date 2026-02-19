@@ -17,7 +17,7 @@
   // Mapeo de imágenes de ciudades desde Google
   const imagenesDeciudades: Record<string, string> = {
     buenosaires: 'https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=800&q=80',
-    cordoba: 'https://prensa.cba.gov.ar/wp-content/uploads/2020/07/Turismo-Champaqu%C3%AD-9.jpg',
+    cordoba: 'https://fotos.perfil.com/2022/05/26/trim/1280/720/la-mona-jimenez-1362424.jpg',
     rosario: 'https://www.afa.com.ar/n/media/manager/1000/750/c/aHR0cHM6Ly93d3cuYWZhLmNvbS5hci91cGxvYWQvdGVzdC9tdXJhbC5qcGc_',
     mendoza: 'https://www.catadelvino.com/uploads/281201514034197247s.jpg',
     la_plata: 'https://turismo.laplata.gob.ar/img/la-ciudad/plaza_morenocatedral-1024x684.jpg',
@@ -46,39 +46,39 @@
   <div class="flip-card-inner">
     <!-- Front: Default card -->
     <div
-      class="flip-card-front bg-[var(--home-card-bg)] rounded-[14px] p-5 flex flex-col gap-[6px] w-full relative shadow-lg"
+      class="flip-card-front bg-[var(--bg-card)] rounded-[16px] p-5 flex flex-col gap-[6px] w-full relative shadow-sm border border-[var(--border-standard)]"
     >
       <!-- Content -->
       <div class="flex flex-col gap-[6px] w-full">
         <button
           onclick={onToggle}
           type="button"
-          class="font-display font-bold text-base text-[var(--home-text-dark)] text-left cursor-pointer hover:text-[var(--airforce-blue)] transition-colors"
+          class="font-display font-bold text-base text-[var(--text-primary)] text-left cursor-pointer hover:text-[var(--accent-primary)] transition-colors"
         >
           {city.name}
         </button>
-        <span class="font-body text-[12px] text-[var(--home-text-light)]">
+        <span class="font-body text-[12px] text-[var(--text-secondary)]">
           {formatearCoordenadas(city.latitude, city.longitude)}
         </span>
         <a
           href="/weather/{city.id}"
-          class="flex items-center gap-1"
+          class="flex items-center gap-1 mt-3"
           onclick={(e) => e.stopPropagation()}
         >
-          <MapPin size={11} class="text-[var(--home-text-light)]" />
-          <span class="font-body text-[12px] font-medium text-[var(--airforce-blue)]">Ver clima →</span>
+          <MapPin size={11} class="text-[var(--text-tertiary)]" />
+          <span class="font-body text-[12px] font-medium text-[var(--accent-primary)]">Ver clima →</span>
         </a>
       </div>
-      
+
       <!-- Barra decorativa inferior -->
-      <div class="absolute bottom-0 left-0 right-0 h-2 rounded-b-[14px]" style="background-color: #7f9c96;"></div>
+      <div class="absolute bottom-0 left-0 right-0 h-2 rounded-b-[16px]" style="background-color: var(--accent-primary);"></div>
     </div>
 
     <!-- Back: Imagen de ciudad (clickeable completo) -->
     <button
       onclick={onToggle}
       type="button"
-      class="flip-card-back relative rounded-[14px] overflow-hidden cursor-pointer text-left w-full border-transparent shadow-lg"
+      class="flip-card-back relative rounded-[16px] overflow-hidden cursor-pointer text-left w-full border-transparent shadow-sm"
       style="background-image: url('{obtenerImagenDeCiudad(city.id)}'); background-size: cover; background-position: center;"
       aria-pressed={selected}
       aria-label="{selected ? 'Deseleccionar' : 'Seleccionar'} {city.name}"
@@ -91,7 +91,7 @@
             {selected ? 'Seleccionada' : 'Ubicación'}
           </span>
         </div>
-        
+
         <div>
           <h3 class="font-display font-bold text-base text-white mb-2 drop-shadow-lg">{city.name}</h3>
           <span class="font-body text-[12px] text-white font-medium drop-shadow">

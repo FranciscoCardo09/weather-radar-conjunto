@@ -12,19 +12,35 @@
   // ver en qué página estamos
   const estaEnHome = $derived($page.url.pathname === '/')
   const estaEnComparar = $derived($page.url.pathname === '/compare')
-  
-  // mostrar header azul solo si es 'home' y NO está en modo oscuro
-  const mostrarHeaderOscuro = $derived(variant === 'home' && !$modoOscuro)
+
+  // Estado para la posición del indicador (animación inmediata al clic)
+  let indicadorPosicion = $state(estaEnHome ? 0 : 1)
+
+  // Actualizar posición basado en la ruta actual
+  $effect(() => {
+    indicadorPosicion = estaEnHome ? 0 : estaEnComparar ? 1 : 0
+  })
+
+  // mostrar header con video de fondo en home
+  const mostrarHeaderOscuro = $derived(variant === 'home')
+
+  // Funciones para manejar el clic inmediato
+  function handleClickCiudades() {
+    indicadorPosicion = 0
+  }
+
+  function handleClickComparar() {
+    indicadorPosicion = 1
+  }
 </script>
 
 {#if mostrarHeaderOscuro}
   <!-- Header azul oscuro para home -->
   <header
-    class="flex items-center justify-between h-16 px-12 pb-3 w-full relative"
-    style="background-color: var(--home-header-bg);"
+    class="flex items-center justify-between h-16 px-12 py-3 w-full relative z-10"
   >
     <!-- Logo -->
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-3 relative z-10">
       <div
         class="w-9 h-9 rounded-lg flex items-center justify-center"
         style="background-color: rgba(255,255,255,0.12);"
@@ -35,18 +51,27 @@
     </div>
 
     <!-- Nav -->
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 relative z-10">
+      <!-- Indicador animado de pestaña activa -->
+      <div
+        class="absolute h-[38px] bg-white/[0.12] rounded-lg transition-transform duration-500 ease-out"
+        style="
+          width: 84px;
+          transform: translateX({indicadorPosicion * 92}px);
+
+        "
+      ></div>
       <a
         href="/"
-        class="font-body text-sm font-medium text-white px-4 py-2 rounded-lg transition-colors"
-        style={estaEnHome ? 'background-color: rgba(255,255,255,0.12);' : ''}
+        onclick={handleClickCiudades}
+        class="font-body text-sm font-medium text-white px-4 py-2 rounded-lg relative z-10 w-[84px] text-center flex items-center justify-center h-[38px]"
       >
         Ciudades
       </a>
       <a
         href="/compare"
-        class="font-body text-sm font-medium text-white px-4 py-2 rounded-lg transition-colors"
-        style={estaEnComparar ? 'background-color: rgba(255,255,255,0.12);' : ''}
+        onclick={handleClickComparar}
+        class="font-body text-sm font-medium text-white px-4 py-2 rounded-lg relative z-10 w-[84px] text-center flex items-center justify-center h-[38px]"
       >
         Comparar
       </a>
@@ -64,9 +89,6 @@
         {/if}
       </button>
     </div>
-    
-    <!-- Barra decorativa inferior -->
-    <div class="absolute bottom-0 left-0 right-0 h-2" style="background-color: #7f9c96;"></div>
   </header>
 {:else}
   <!-- Header estándar claro/oscuro -->
@@ -82,20 +104,32 @@
     </div>
 
     <!-- Navegación -->
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 relative">
+      <!-- Indicador animado de pestaña activa -->
+      <div
+        class="absolute h-[38px] rounded-[10px] transition-transform duration-500 ease-out"
+        style="
+          background-color: {estaEnComparar ? 'var(--accent-primary-soft)' : 'var(--bg-card)'};
+          width: 84px;
+          transform: translateX({indicadorPosicion * 92}px);
+
+        "
+      ></div>
       <a
         href="/"
-        class="font-body text-sm font-medium text-[var(--text-secondary)] px-4 py-2 rounded-[10px] transition-colors hover:bg-[var(--bg-card)]"
-        class:bg-[var(--bg-card)]={estaEnHome}
+        onclick={handleClickCiudades}
+        class="font-body text-sm font-medium px-4 py-2 rounded-[10px] relative z-10 w-[84px] text-center flex items-center justify-center h-[38px]"
         class:text-[var(--text-primary)]={estaEnHome}
+        class:text-[var(--text-secondary)]={!estaEnHome}
       >
         Ciudades
       </a>
       <a
         href="/compare"
-        class="font-body text-sm font-medium text-[var(--text-secondary)] px-4 py-2 rounded-[10px] transition-colors hover:bg-[var(--bg-card)]"
-        class:bg-[var(--accent-primary-soft)]={estaEnComparar}
+        onclick={handleClickComparar}
+        class="font-body text-sm font-medium px-4 py-2 rounded-[10px] relative z-10 w-[84px] text-center flex items-center justify-center h-[38px]"
         class:text-[var(--accent-primary)]={estaEnComparar}
+        class:text-[var(--text-secondary)]={!estaEnComparar}
       >
         Comparar
       </a>
@@ -112,8 +146,5 @@
         {/if}
       </button>
     </div>
-    
-    <!-- Barra decorativa inferior -->
-    <div class="absolute bottom-0 left-0 right-0 h-2" style="background-color: #7f9c96;"></div>
   </header>
 {/if}

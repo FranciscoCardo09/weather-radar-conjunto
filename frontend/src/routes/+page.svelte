@@ -27,7 +27,7 @@
 
   function alternarCiudad(id: string): void {
     const nuevosIds = new Set(idsSeleccionados)
-    
+
     if (nuevosIds.has(id)) {
       nuevosIds.delete(id)
     } else {
@@ -35,13 +35,13 @@
       if (nuevosIds.size >= 50) return
       nuevosIds.add(id)
     }
-    
+
     idsSeleccionados = nuevosIds
   }
 
   function irAComparar(): void {
     if (cantidadSeleccionados < 2) return
-    
+
     const ids = [...idsSeleccionados].join(',')
     goto(`/compare?ids=${ids}`)
   }
@@ -51,24 +51,24 @@
   <title>Ciudades – Weather Radar</title>
 </svelte:head>
 
-<div class="min-h-screen flex flex-col" style="background-color: var(--home-bg);">
-  <NavHeader variant="home" />
+<div class="min-h-screen flex flex-col" style="background-color: var(--bg-page);">
+  <NavHeader variant="standard" />
 
   <!-- Main content -->
   <main class="flex-1 flex flex-col gap-8 px-12 py-10 pb-24">
     <!-- Title row -->
     <div class="flex items-end justify-between w-full">
       <div class="flex flex-col gap-2">
-        <h1 class="font-display font-bold text-[32px] text-[var(--home-text-dark)]">Ciudades</h1>
-        <p class="font-body text-sm text-[var(--home-text-light)]">
+        <h1 class="font-display font-bold text-[32px] text-[var(--text-primary)]">Ciudades</h1>
+        <p class="font-body text-sm text-[var(--text-secondary)]">
           Seleccioná ciudades para ver el clima o compararlas entre ellas
         </p>
       </div>
       <div
         class="flex items-center gap-[6px] rounded-[20px] px-[14px] py-[6px]"
-        style="background-color: var(--yale-blue-soft);"
+        style="background-color: var(--accent-primary-soft);"
       >
-        <span class="font-body text-sm font-medium text-[var(--airforce-blue)]">
+        <span class="font-body text-sm font-medium text-[var(--accent-primary)]">
           {ciudades.length} ciudades
         </span>
       </div>
@@ -78,7 +78,7 @@
     {#if cargando}
       <div class="flex items-center justify-center py-24">
         <div
-          class="w-8 h-8 rounded-full border-2 border-[var(--airforce-blue)] border-t-transparent animate-spin"
+          class="w-8 h-8 rounded-full border-2 border-[var(--accent-primary)] border-t-transparent animate-spin"
         ></div>
       </div>
     {:else if error}
@@ -96,7 +96,7 @@
         </button>
       </div>
     {:else if ciudades.length === 0}
-      <p class="font-body text-sm text-[var(--home-text-light)] text-center py-12">
+      <p class="font-body text-sm text-[var(--text-secondary)] text-center py-12">
         No hay ciudades disponibles
       </p>
     {:else}

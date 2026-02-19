@@ -43,7 +43,7 @@
 
   function alternarCiudad(id: string): void {
     const nuevosIds = new Set(idsSeleccionados)
-    
+
     if (nuevosIds.has(id)) {
       nuevosIds.delete(id)
     } else {
@@ -51,7 +51,7 @@
       if (nuevosIds.size >= 50) return
       nuevosIds.add(id)
     }
-    
+
     idsSeleccionados = nuevosIds
   }
 
@@ -65,7 +65,7 @@
 
     try {
       resultado = await compararClimas(idsAComparar)
-      
+
       // actualizar URL con los IDs seleccionados
       const url = new URL(window.location.href)
       url.searchParams.set('ids', idsAComparar.join(','))
@@ -82,8 +82,8 @@
   <title>Comparar ciudades – Weather Radar</title>
 </svelte:head>
 
-<div class="min-h-screen flex flex-col" style="background-color: var(--home-bg);">
-  <NavHeader variant="home" />
+<div class="min-h-screen flex flex-col" style="background-color: var(--bg-page);">
+  <NavHeader variant="standard" />
 
   <main class="flex flex-col gap-8 px-12 py-10">
     <BackLink href="/" />
