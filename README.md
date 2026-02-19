@@ -4,69 +4,57 @@ Backend unificado para consulta y comparación de datos meteorológicos en tiemp
 
 ## Origen del código
 
-Este backend resulta de la fusión técnica de dos proyectos independientes que resolvían el mismo problema con enfoques distintos:
+Este backend es el resultado de juntar dos proyectos que hicimos por separado para la misma consigna. Cada uno lo resolvió a su manera, así que agarramos lo mejor de cada uno y armamos esta versión final.
 
-- **proyecto-fran**: Backend en Go con estructura plana (`package main`), enfocado en robustez operacional (config validada, rate limiting, graceful shutdown, connection pooling).
-- **proyecto-nico**: Backend en Go con estructura estándar (`cmd/` + `internal/`), enfocado en separación de responsabilidades por paquetes.
+- **proyecto-fran**: Tenía todo en un solo paquete pero estaba bastante completo en cuanto a configuración, rate limiting, manejo de conexiones y validaciones.
+- **proyecto-nico**: Estaba mejor organizado en carpetas y paquetes, y tenía un buen manejo de errores parciales (si una ciudad fallaba, las demás seguían funcionando).
 
-### Qué se tomó de cada proyecto
+### Qué usamos de cada proyecto
 
 #### De proyecto-fran
 
-| Componente | Justificación |
-|---|---|
-| Gestión de configuración (`loadConfig`) | Única implementación con validación de env vars, rangos y defaults. proyecto-nico tenía todo hardcoded |
-| Cliente HTTP con connection pooling | proyecto-nico creaba un `http.Client{}` nuevo por cada request, lo que impide reutilización de conexiones TCP |
-| Rate limiting (`golang.org/x/time/rate`) | proyecto-nico no tenía protección contra abuso |
-| CORS vía `gin-contrib/cors` | proyecto-nico usaba una implementación manual inline con headers seteados a mano |
-| Graceful shutdown | proyecto-nico usaba `router.Run()` sin manejo de señales |
-| Validación de input en compare | 5 niveles: JSON binding, lista vacía, máximo 50, duplicados, existencia de ciudad, mínimo 2 distintas. proyecto-nico solo validaba JSON binding e ignoraba ciudades inválidas silenciosamente |
-| Concurrencia con canales buffered | Canal buffered, timeout de 5s por ciudad, propagación de contexto, preservación de orden. proyecto-nico usaba canal unbuffered sin timeout per-city |
-| Catálogo de 15 ciudades argentinas | proyecto-nico tenía 6 ciudades de distintos países |
-| Lookup de ciudades por map O(1) | proyecto-nico usaba iteración lineal O(n) y recreaba el slice en cada llamada |
-| Mapping de weather codes (9 categorías) | Mayor granularidad que las 6 categorías de proyecto-nico |
-| Aggregator con ranking por temperatura | El `ComputeSummary` de proyecto-fran incluye ranking ordenado. proyecto-nico no lo tenía |
-| Logging con niveles de severidad | proyecto-nico no tenía logging |
+- **Configuración con variables de entorno**: El proyecto de Nico tenía todo hardcodeado, así que usamos el sistema de config de Fran que lee de env vars con valores por defecto.
+- **Cliente HTTP con connection pooling**: Nico creaba un cliente nuevo en cada request, lo que no reutiliza conexiones. Fran ya tenía uno compartido con pooling configurado.
+- **Rate limiting**: Nico no tenía ningún tipo de límite de requests. Usamos el rate limiter de Fran con `golang.org/x/time/rate`.
+- **CORS con gin-contrib/cors**: Nico seteaba los headers de CORS a mano. Usamos la librería que ya tenía Fran.
+- **Graceful shutdown**: Nico usaba `router.Run()` directo. Fran tenía manejo de señales para apagar el servidor limpiamente.
+- **Validaciones en el endpoint de comparación**: Fran validaba JSON, lista vacía, máximo 50 ciudades, duplicados, que las ciudades existan, y mínimo 2 distintas. Nico solo validaba el JSON.
+- **Concurrencia con canales buffered**: Para traer el clima de varias ciudades a la vez. Fran usaba canales buffered con timeout por ciudad. Nico usaba canal sin buffer y sin timeout individual.
+- **15 ciudades argentinas**: Nico tenía 6 ciudades de distintos países. Fran tenía las 15 ciudades argentinas que pedía la consigna.
+- **Búsqueda de ciudades por mapa**: Nico buscaba recorriendo toda la lista cada vez. Fran usaba un mapa para buscar directo por ID.
+- **Mapeo de códigos del clima (WMO)**: Fran tenía más categorías que Nico para los códigos de condición climática.
+- **Ranking de ciudades por temperatura**: El resumen de Fran incluye un ranking ordenado que Nico no tenía.
+- **Logging**: Nico no logueaba nada. Fran tenía logs con niveles de severidad.
 
 #### De proyecto-nico
 
-| Componente | Justificación |
-|---|---|
-| Estructura de carpetas (`cmd/server`, `internal/`) | Standard Go project layout. proyecto-fran usaba paquete plano, lo que impide importar código desde otros módulos |
-| Separación en paquetes (`handlers`, `cities`, `weather`) | Cada dominio en su propio paquete con responsabilidad acotada. proyecto-fran mezclaba todo en `package main` |
-| Separación de exitosos/fallidos en compare | La respuesta incluye `cities` (exitosos) y `errors` (fallidos) por separado, permitiendo degradación parcial. proyecto-fran fallaba la request completa si una ciudad no respondía |
-| Endpoint `/ping` | Health check básico ausente en proyecto-fran |
-| Campo `Error` en `CityWeather` | Permite comunicar errores parciales por ciudad individual |
+- **Estructura de carpetas (`cmd/` + `internal/`)**: Es la forma estándar de organizar un proyecto en Go. Fran tenía todo en un solo paquete, lo cual funciona pero no escala bien.
+- **Separación en paquetes (`handlers`, `cities`, `weather`)**: Cada parte del código tiene su lugar. Es más fácil de leer y mantener.
+- **Manejo de errores parciales en comparación**: Si pedís 5 ciudades y una falla, te devuelve las 4 que funcionaron y te avisa cuál falló. En el proyecto de Fran si una fallaba, fallaba toda la request.
+- **Endpoint `/ping`**: Un health check simple que Fran no tenía.
+- **Campo `Error` en `CityWeather`**: Para poder decirte qué pasó con cada ciudad que falló individualmente.
 
-### Qué se descartó
+### Qué descartamos
 
-- **CORS manual de proyecto-nico**: Implementación frágil con headers seteados inline, reemplazada por `gin-contrib/cors`.
-- **`GetAll()` de proyecto-nico**: Recreaba un slice nuevo en cada invocación. Reemplazado por slice pre-calculado en init.
-- **Búsqueda lineal de ciudades de proyecto-nico**: O(n) por cada lookup. Reemplazado por map O(1).
-- **`RankingEntry` de proyecto-fran**: Tipo definido pero nunca utilizado. Eliminado.
-- **Comentarios personales de proyecto-nico**: Notas de debugging en código de producción (`"Tuve un error de failed to fech..."`). Eliminados.
-- **Bloque explicativo al final de `compare.go` de proyecto-nico**: Comentario redundante de 7 líneas describiendo el flujo ya evidente en el código.
-- **`Relativehumidity` / `Windspeed10` de proyecto-fran**: Nombres de campo corregidos a `RelativeHumidity` / `WindSpeed` para seguir convenciones Go.
+- **CORS manual de Nico**: Era frágil y propenso a errores, lo reemplazamos por la librería.
+- **`GetAll()` de Nico**: Creaba una lista nueva cada vez que la llamabas. Usamos una lista pre-calculada que se arma una sola vez.
+- **Búsqueda lineal de Nico**: Muy lenta si crecía la lista de ciudades. Usamos el mapa.
+- **`RankingEntry` de Fran**: Un tipo que estaba definido pero nunca se usaba. Lo sacamos.
+- **Comentarios de debug de Nico**: Había notas tipo "Tuve un error de failed to fech..." que eran de cuando estaba desarrollando. Los limpiamos.
+- **Comentario largo al final de `compare.go` de Nico**: 7 líneas explicando algo que ya se entendía leyendo el código. Lo sacamos.
+- **Nombres de campos mal escritos de Fran**: `Relativehumidity` y `Windspeed10` los corregimos a `RelativeHumidity` y `WindSpeed` que es como se nombra en Go.
 
-### Decisiones arquitectónicas priorizadas
+### Decisiones que tomamos
 
-1. **Estructura estándar Go por sobre conveniencia**: La estructura plana de proyecto-fran era funcional pero no escalable. Se adoptó `cmd/` + `internal/` de proyecto-nico como base organizativa.
+1. **Estructura estándar de Go**: Aunque el paquete plano de Fran funcionaba, elegimos la estructura de Nico porque es lo que se recomienda y facilita que el proyecto crezca.
 
-2. **Robustez operacional por sobre simplicidad**: Configuración validada, rate limiting, graceful shutdown y connection pooling no son opcionales en un servicio que hace requests a APIs externas.
+2. **No sacrificar cosas que ya funcionaban bien**: Rate limiting, connection pooling y graceful shutdown ya estaban hechos en el proyecto de Fran y no tenía sentido sacarlos.
 
-3. **Degradación parcial por sobre fallo total**: Si 4 de 5 ciudades responden, el cliente recibe datos de 4 ciudades más un array de errores. La versión de proyecto-fran fallaba toda la request.
+3. **Que no se caiga todo si falla una ciudad**: Si pedís comparar 5 ciudades y la API no responde para una, te mostramos las otras 4 y te avisamos cuál falló.
 
-4. **Validación estricta en el borde**: Toda validación de input ocurre en el handler antes de invocar lógica de negocio. Errores detectables se rechazan temprano con status codes apropiados.
+4. **Validar todo en los handlers**: Antes de hacer cualquier cosa, chequeamos que los datos que mandó el usuario estén bien. Si algo está mal, respondemos con un error claro.
 
-5. **Consistencia de naming**: Se unificaron las convenciones de naming (PascalCase para campos exportados, camelCase para variables locales) eliminando inconsistencias presentes en ambos proyectos.
-
-### Mejoras estructurales logradas
-
-- Código organizado en 5 paquetes con responsabilidades claras vs paquete único.
-- Eliminación de estado global expuesto (el HTTP client ahora se inicializa vía función exportada del paquete `weather`).
-- Repositorio de ciudades con slice pre-calculado en vez de reconstrucción por request.
-- Firma de `FetchForCities` retorna `(successful, failed)` en vez de `([]data, error)`, eliminando la ambigüedad entre "no hay datos" y "contexto cancelado".
-- Modelos con JSON tags consistentes y campos con nombres Go idiomáticos.
+5. **Nombres consistentes**: Unificamos cómo se nombran las cosas en todo el proyecto para que sea más fácil de leer.
 
 ## Estructura del proyecto
 
