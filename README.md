@@ -4,57 +4,19 @@ Backend unificado para consulta y comparación de datos meteorológicos en tiemp
 
 ## Origen del código
 
-Este backend es el resultado de juntar dos proyectos que hicimos por separado para la misma consigna. Cada uno lo resolvió a su manera, así que agarramos lo mejor de cada uno y armamos esta versión final.
+Juntamos dos proyectos que hicimos por separado para la misma consigna. Agarramos lo mejor de cada uno.
 
-- **proyecto-fran**: Tenía todo en un solo paquete pero estaba bastante completo en cuanto a configuración, rate limiting, manejo de conexiones y validaciones.
-- **proyecto-nico**: Estaba mejor organizado en carpetas y paquetes, y tenía un buen manejo de errores parciales (si una ciudad fallaba, las demás seguían funcionando).
+### De proyecto-fran
 
-### Qué usamos de cada proyecto
+La mayoría de la lógica del backend: configuración por env vars, cliente HTTP con connection pooling, rate limiting, graceful shutdown, validaciones completas en el compare (duplicados, máximo 50, existencia, etc.), concurrencia con canales buffered y timeout por ciudad, las 15 ciudades argentinas, búsqueda por mapa, mapeo de códigos WMO, ranking por temperatura y logging.
 
-#### De proyecto-fran
+### De proyecto-nico
 
-- **Configuración con variables de entorno**: El proyecto de Nico tenía todo hardcodeado, así que usamos el sistema de config de Fran que lee de env vars con valores por defecto.
-- **Cliente HTTP con connection pooling**: Nico creaba un cliente nuevo en cada request, lo que no reutiliza conexiones. Fran ya tenía uno compartido con pooling configurado.
-- **Rate limiting**: Nico no tenía ningún tipo de límite de requests. Usamos el rate limiter de Fran con `golang.org/x/time/rate`.
-- **CORS con gin-contrib/cors**: Nico seteaba los headers de CORS a mano. Usamos la librería que ya tenía Fran.
-- **Graceful shutdown**: Nico usaba `router.Run()` directo. Fran tenía manejo de señales para apagar el servidor limpiamente.
-- **Validaciones en el endpoint de comparación**: Fran validaba JSON, lista vacía, máximo 50 ciudades, duplicados, que las ciudades existan, y mínimo 2 distintas. Nico solo validaba el JSON.
-- **Concurrencia con canales buffered**: Para traer el clima de varias ciudades a la vez. Fran usaba canales buffered con timeout por ciudad. Nico usaba canal sin buffer y sin timeout individual.
-- **15 ciudades argentinas**: Nico tenía 6 ciudades de distintos países. Fran tenía las 15 ciudades argentinas que pedía la consigna.
-- **Búsqueda de ciudades por mapa**: Nico buscaba recorriendo toda la lista cada vez. Fran usaba un mapa para buscar directo por ID.
-- **Mapeo de códigos del clima (WMO)**: Fran tenía más categorías que Nico para los códigos de condición climática.
-- **Ranking de ciudades por temperatura**: El resumen de Fran incluye un ranking ordenado que Nico no tenía.
-- **Logging**: Nico no logueaba nada. Fran tenía logs con niveles de severidad.
-
-#### De proyecto-nico
-
-- **Estructura de carpetas (`cmd/` + `internal/`)**: Es la forma estándar de organizar un proyecto en Go. Fran tenía todo en un solo paquete, lo cual funciona pero no escala bien.
-- **Separación en paquetes (`handlers`, `cities`, `weather`)**: Cada parte del código tiene su lugar. Es más fácil de leer y mantener.
-- **Manejo de errores parciales en comparación**: Si pedís 5 ciudades y una falla, te devuelve las 4 que funcionaron y te avisa cuál falló. En el proyecto de Fran si una fallaba, fallaba toda la request.
-- **Endpoint `/ping`**: Un health check simple que Fran no tenía.
-- **Campo `Error` en `CityWeather`**: Para poder decirte qué pasó con cada ciudad que falló individualmente.
+La estructura de carpetas (`cmd/` + `internal/`), la separación en paquetes por dominio, el manejo de errores parciales en la comparación (si una ciudad falla no se cae todo), el endpoint `/ping` y el campo `Error` en `CityWeather` para reportar fallos individuales.
 
 ### Qué descartamos
 
-- **CORS manual de Nico**: Era frágil y propenso a errores, lo reemplazamos por la librería.
-- **`GetAll()` de Nico**: Creaba una lista nueva cada vez que la llamabas. Usamos una lista pre-calculada que se arma una sola vez.
-- **Búsqueda lineal de Nico**: Muy lenta si crecía la lista de ciudades. Usamos el mapa.
-- **`RankingEntry` de Fran**: Un tipo que estaba definido pero nunca se usaba. Lo sacamos.
-- **Comentarios de debug de Nico**: Había notas tipo "Tuve un error de failed to fech..." que eran de cuando estaba desarrollando. Los limpiamos.
-- **Comentario largo al final de `compare.go` de Nico**: 7 líneas explicando algo que ya se entendía leyendo el código. Lo sacamos.
-- **Nombres de campos mal escritos de Fran**: `Relativehumidity` y `Windspeed10` los corregimos a `RelativeHumidity` y `WindSpeed` que es como se nombra en Go.
-
-### Decisiones que tomamos
-
-1. **Estructura estándar de Go**: Aunque el paquete plano de Fran funcionaba, elegimos la estructura de Nico porque es lo que se recomienda y facilita que el proyecto crezca.
-
-2. **No sacrificar cosas que ya funcionaban bien**: Rate limiting, connection pooling y graceful shutdown ya estaban hechos en el proyecto de Fran y no tenía sentido sacarlos.
-
-3. **Que no se caiga todo si falla una ciudad**: Si pedís comparar 5 ciudades y la API no responde para una, te mostramos las otras 4 y te avisamos cuál falló.
-
-4. **Validar todo en los handlers**: Antes de hacer cualquier cosa, chequeamos que los datos que mandó el usuario estén bien. Si algo está mal, respondemos con un error claro.
-
-5. **Nombres consistentes**: Unificamos cómo se nombran las cosas en todo el proyecto para que sea más fácil de leer.
+CORS manual de Nico (reemplazado por librería), `GetAll()` que recreaba la lista en cada llamada, búsqueda lineal de ciudades, un tipo `RankingEntry` que nunca se usaba, comentarios de debug que habían quedado, y nombres de campos mal escritos que corregimos.
 
 ## Estructura del proyecto
 
