@@ -59,6 +59,7 @@
     loop
     muted
     playsinline
+    preload="auto"
     class="fixed inset-0 w-full h-full object-cover"
     style="z-index: 0;"
   >

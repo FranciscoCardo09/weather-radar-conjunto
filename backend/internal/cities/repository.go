@@ -1,5 +1,7 @@
 package cities
 
+import "sort"
+
 // Lookup O(1) por ID
 var citiesMap = map[string]City{
 	"cordoba":               {ID: "cordoba", Name: "Córdoba", Latitude: -31.42, Longitude: -64.18},
@@ -19,12 +21,15 @@ var citiesMap = map[string]City{
 	"ushuaia":               {ID: "ushuaia", Name: "Ushuaia", Latitude: -54.80, Longitude: -68.30},
 }
 
-// Slice pre-calculado para evitar reconstrucción en cada request
+// Slice pre-calculado ordenado por nombre para consistencia
 var citiesList = func() []City {
 	list := make([]City, 0, len(citiesMap))
 	for _, city := range citiesMap {
 		list = append(list, city)
 	}
+	sort.Slice(list, func(i, j int) bool {
+		return list[i].Name < list[j].Name
+	})
 	return list
 }()
 

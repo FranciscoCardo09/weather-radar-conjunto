@@ -131,7 +131,7 @@
             <span class="font-body text-sm font-medium" style="color: {$modoOscuro ? '#cbd5e1' : 'rgba(255, 255, 255, 0.8)'};"
               >{condition}</span
             >
-            <span class="font-body text-sm" style="color: {$modoOscuro ? '#94a3b8' : 'rgba(255, 255, 255, 0.7)'};">{ cities.join(', ')}</span>
+            <span class="font-body text-sm" style="color: {$modoOscuro ? '#94a3b8' : 'rgba(255, 255, 255, 0.7)'};">{cities.join(', ')}</span>
           </div>
         {/each}
       </div>

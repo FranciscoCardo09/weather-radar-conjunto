@@ -15,7 +15,8 @@
   <div class="flex items-center gap-3 w-full">
     <div
       class="w-11 h-11 rounded-[12px] flex items-center justify-center shrink-0"
-      style="background-color: {$modoOscuro ? 'rgba(51, 65, 85, 0.8)' : 'rgba(255, 255, 255, 0.2)'};"    >
+      style="background-color: {$modoOscuro ? 'rgba(51, 65, 85, 0.8)' : 'rgba(255, 255, 255, 0.2)'};"
+    >
       <CloudSun size={22} style="color: {$modoOscuro ? '#94a3b8' : 'white'};" />
     </div>
     <div class="flex flex-col gap-[2px] flex-1 min-w-0">
@@ -32,7 +33,8 @@
   <div class="flex gap-2 w-full">
     <div
       class="flex-1 flex flex-col items-center gap-1 rounded-[12px] py-3 px-[10px]"
-      style="background-color: {$modoOscuro ? 'rgba(51, 65, 85, 0.6)' : 'rgba(255, 255, 255, 0.15)'};"    >
+      style="background-color: {$modoOscuro ? 'rgba(51, 65, 85, 0.6)' : 'rgba(255, 255, 255, 0.15)'};"
+    >
       <span class="font-display font-extrabold text-[20px]" style="color: {$modoOscuro ? '#f1f5f9' : 'white'};"
         >{weather.temperature}°C</span
       >
@@ -40,7 +42,8 @@
     </div>
     <div
       class="flex-1 flex flex-col items-center gap-1 rounded-[12px] py-3 px-[10px]"
-      style="background-color: {$modoOscuro ? 'rgba(51, 65, 85, 0.6)' : 'rgba(255, 255, 255, 0.15)'};"    >
+      style="background-color: {$modoOscuro ? 'rgba(51, 65, 85, 0.6)' : 'rgba(255, 255, 255, 0.15)'};"
+    >
       <span class="font-display font-extrabold text-[20px]" style="color: {$modoOscuro ? '#f1f5f9' : 'white'};"
         >{weather.humidity}%</span
       >
@@ -48,7 +51,8 @@
     </div>
     <div
       class="flex-1 flex flex-col items-center gap-1 rounded-[12px] py-3 px-[10px]"
-      style="background-color: {$modoOscuro ? 'rgba(51, 65, 85, 0.6)' : 'rgba(255, 255, 255, 0.15)'};"    >
+      style="background-color: {$modoOscuro ? 'rgba(51, 65, 85, 0.6)' : 'rgba(255, 255, 255, 0.15)'};"
+    >
       <span class="font-display font-extrabold text-[20px]" style="color: {$modoOscuro ? '#f1f5f9' : 'white'};"
         >{weather.wind_speed} km/h</span
       >

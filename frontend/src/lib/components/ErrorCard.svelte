@@ -22,6 +22,6 @@
   </div>
   <div class="flex flex-col gap-[2px] flex-1 min-w-0">
     <span class="font-display font-bold text-sm truncate" style="color: {$modoOscuro ? '#fca5a5' : 'white'};">{cityName}</span>
-    <span class="font-body text-[12px] truncate" style="color: {$modoOscuro ? '#fecaca' : 'rgba(255, 255, 255, 0.8)'};">{ errorMsg}</span>
+    <span class="font-body text-[12px] truncate" style="color: {$modoOscuro ? '#fecaca' : 'rgba(255, 255, 255, 0.8)'};">{errorMsg}</span>
   </div>
 </div>

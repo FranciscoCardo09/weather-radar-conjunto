@@ -2,9 +2,6 @@
   import { page } from '$app/stores'
   import { Moon, Sun, CloudSun } from 'lucide-svelte'
   import { modoOscuro, cambiarTema } from '$lib/stores/theme'
-  import { slide } from 'svelte/transition'
-  import { cubicInOut } from 'svelte/easing'
-  import { onMount } from 'svelte'
 
   interface Props {
     variant?: 'home' | 'standard'
@@ -61,7 +58,7 @@
         style="
           width: 84px;
           transform: translateX({indicadorPosicion * 92}px);
-          will-change: transform;
+
         "
       ></div>
       <a
@@ -115,7 +112,7 @@
           background-color: {estaEnComparar ? 'var(--accent-primary-soft)' : 'var(--bg-card)'};
           width: 84px;
           transform: translateX({indicadorPosicion * 92}px);
-          will-change: transform;
+
         "
       ></div>
       <a

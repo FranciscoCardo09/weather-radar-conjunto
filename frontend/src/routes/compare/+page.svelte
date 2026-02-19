@@ -90,6 +90,7 @@
     loop
     muted
     playsinline
+    preload="auto"
     class="fixed inset-0 w-full h-full object-cover"
     style="z-index: 0;"
   >
@@ -146,7 +147,7 @@
                 ? (isSelected ? 'background-color: rgba(100, 116, 139, 0.5); color: #f1f5f9; border-color: rgba(148, 163, 184, 0.5);' : 'background-color: rgba(51, 65, 85, 0.5); color: #cbd5e1; border-color: rgba(100, 116, 139, 0.3);')
                 : (isSelected ? 'background-color: rgba(255, 255, 255, 0.3); color: white; border-color: rgba(255, 255, 255, 0.5);' : 'background-color: rgba(255, 255, 255, 0.1); color: white; border-color: rgba(255, 255, 255, 0.3);')}
             >
-{city.name}
+              {#if isSelected}✓ {/if}{city.name}
             </button>
           {/each}
         </div>
@@ -195,7 +196,7 @@
       <!-- Error cities -->
       {#if resultado.errors && resultado.errors.length > 0}
         <div class="flex flex-col gap-4 w-full">
-          <h2 class="font-display font-bold text-base" style="color: {$modoOscuro ? '#fca5a5' : '#fca5a5'};">
+          <h2 class="font-display font-bold text-base" style="color: #fca5a5;">
             Ciudades con error
           </h2>
           <div class="flex flex-col gap-3 w-full">
@@ -211,8 +212,7 @@
 
       <!-- Summary panel -->
       <div class="flex flex-col gap-4 w-full">
-        <h2 class="font-display font-bold text-[22px]" style="color: {$modoOscuro ? '#f1f5f9' : 'white'};">          Resumen comparativo
-        </h2>
+        <h2 class="font-display font-bold text-[22px]" style="color: {$modoOscuro ? '#f1f5f9' : 'white'};">Resumen comparativo</h2>
         <SummaryPanel summary={resultado.summary} />
       </div>
     {/if}
