@@ -9,6 +9,7 @@
   import SummaryPanel from '$lib/components/SummaryPanel.svelte'
   import { obtenerCiudades, compararClimas } from '$lib/api'
   import type { City, CompareResult } from '$lib/types'
+  import { modoOscuro } from '$lib/stores/theme'
 
   let ciudades = $state<City[]>([])
   let idsSeleccionados = $state<Set<string>>(new Set())
@@ -82,36 +83,56 @@
   <title>Comparar ciudades – Weather Radar</title>
 </svelte:head>
 
-<div class="min-h-screen flex flex-col" style="background-color: var(--home-bg);">
+<div class="min-h-screen flex flex-col relative overflow-hidden">
+  <!-- Video de fondo de toda la página (siempre visible) -->
+  <video
+    autoplay
+    loop
+    muted
+    playsinline
+    preload="auto"
+    class="fixed inset-0 w-full h-full object-cover"
+    style="z-index: 0;"
+  >
+    <source src="https://v1.pinimg.com/videos/mc/720p/a8/72/5b/a8725bfe4a191427e84dd151f664f90f.mp4" type="video/mp4" />
+  </video>
+  
+  <!-- Overlay con transparencia dinámica según el tema -->
+  <div class="fixed inset-0 transition-colors duration-300" style="background-color: {$modoOscuro ? 'rgba(15, 23, 42, 0.85)' : 'rgba(107, 114, 128, 0.6)'}; z-index: 1;"></div>
+  
   <NavHeader variant="home" />
 
-  <main class="flex flex-col gap-8 px-12 py-10">
+  <main class="flex flex-col gap-8 px-12 py-10 relative z-10">
     <BackLink href="/" />
 
     <!-- Title -->
     <div class="flex flex-col gap-1">
-      <h1 class="font-display font-bold text-[28px] text-[var(--text-primary)]">
+      <h1 class="font-display font-bold text-[28px]" style="color: {$modoOscuro ? '#f1f5f9' : 'white'};">
         Comparar ciudades
       </h1>
-      <p class="font-body text-sm text-[var(--text-secondary)]">
+      <p class="font-body text-sm" style="color: {$modoOscuro ? '#cbd5e1' : 'white'};">
         Seleccioná las ciudades que querés comparar
       </p>
     </div>
 
     <!-- City selector section -->
     <div
-      class="bg-[var(--bg-card)] rounded-[16px] p-6 flex flex-col gap-4 w-full"
+      class="rounded-[20px] p-6 flex flex-col gap-4 w-full transition-all duration-300"
+      style="{$modoOscuro 
+        ? 'background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);' 
+        : 'background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);'}"
     >
-      <span class="font-display font-bold text-base text-[var(--text-primary)]">
+      <span class="font-display font-bold text-base" style="color: {$modoOscuro ? '#f1f5f9' : 'white'};">
         Ciudades disponibles
       </span>
 
       {#if cargandoCiudades}
         <div class="flex items-center gap-2">
           <div
-            class="w-4 h-4 rounded-full border-2 border-[var(--accent-primary)] border-t-transparent animate-spin"
+            class="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin"
+            style="border-color: {$modoOscuro ? '#94a3b8' : 'rgba(255, 255, 255, 0.8)'}; border-top-color: transparent;"
           ></div>
-          <span class="font-body text-sm text-[var(--text-secondary)]">Cargando ciudades…</span>
+          <span class="font-body text-sm" style="color: {$modoOscuro ? '#cbd5e1' : 'white'};">Cargando ciudades…</span>
         </div>
       {:else}
         <!-- City chips -->
@@ -122,9 +143,9 @@
               onclick={() => alternarCiudad(city.id)}
               type="button"
               class="font-body text-sm px-3 py-[6px] rounded-full border transition-colors"
-              style={isSelected
-                ? 'background-color: var(--yale-blue); color: white; border-color: var(--yale-blue);'
-                : 'background-color: transparent; color: var(--chip-unselected-text); border-color: var(--chip-unselected-border);'}
+              style={$modoOscuro
+                ? (isSelected ? 'background-color: rgba(100, 116, 139, 0.5); color: #f1f5f9; border-color: rgba(148, 163, 184, 0.5);' : 'background-color: rgba(51, 65, 85, 0.5); color: #cbd5e1; border-color: rgba(100, 116, 139, 0.3);')
+                : (isSelected ? 'background-color: rgba(255, 255, 255, 0.3); color: white; border-color: rgba(255, 255, 255, 0.5);' : 'background-color: rgba(255, 255, 255, 0.1); color: white; border-color: rgba(255, 255, 255, 0.3);')}
             >
               {#if isSelected}✓ {/if}{city.name}
             </button>
@@ -138,8 +159,8 @@
           onclick={() => ejecutarComparacion()}
           disabled={!puedeComparar || cargando}
           type="button"
-          class="flex items-center gap-2 text-white rounded-[10px] px-5 py-[10px] font-body text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          style="background-color: var(--accent-primary);"
+          class="flex items-center gap-2 rounded-[10px] px-5 py-[10px] font-body text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          style="background-color: {$modoOscuro ? 'rgba(100, 116, 139, 0.6)' : 'rgba(255, 255, 255, 0.25)'}; color: {$modoOscuro ? '#f1f5f9' : 'white'};"
         >
           {#if cargando}
             <div
@@ -153,8 +174,8 @@
 
     <!-- Global error -->
     {#if error}
-      <div class="rounded-[16px] p-4" style="background-color: var(--color-error-soft);">
-        <p class="font-body text-sm text-[var(--color-error)]">{error}</p>
+      <div class="rounded-[16px] p-4 transition-all duration-300" style="{$modoOscuro ? 'background: rgba(153, 27, 27, 0.3); border: 1px solid rgba(239, 68, 68, 0.4);' : 'background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3);'}">
+        <p class="font-body text-sm" style="color: {$modoOscuro ? '#fca5a5' : 'white'};">{error}</p>
       </div>
     {/if}
 
@@ -163,7 +184,7 @@
       <!-- Successful cities -->
       {#if resultado.cities.length > 0}
         <div class="flex flex-col gap-4 w-full">
-          <h2 class="font-display font-bold text-[22px] text-[var(--text-primary)]">Resultados</h2>
+          <h2 class="font-display font-bold text-[22px]" style="color: {$modoOscuro ? '#f1f5f9' : 'white'};">Resultados</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
             {#each resultado.cities as weather (weather.city_id)}
               <WeatherCityCard {weather} />
@@ -175,7 +196,7 @@
       <!-- Error cities -->
       {#if resultado.errors && resultado.errors.length > 0}
         <div class="flex flex-col gap-4 w-full">
-          <h2 class="font-display font-bold text-base text-[var(--color-error)]">
+          <h2 class="font-display font-bold text-base" style="color: #fca5a5;">
             Ciudades con error
           </h2>
           <div class="flex flex-col gap-3 w-full">
@@ -191,9 +212,7 @@
 
       <!-- Summary panel -->
       <div class="flex flex-col gap-4 w-full">
-        <h2 class="font-display font-bold text-[22px] text-[var(--text-primary)]">
-          Resumen comparativo
-        </h2>
+        <h2 class="font-display font-bold text-[22px]" style="color: {$modoOscuro ? '#f1f5f9' : 'white'};">Resumen comparativo</h2>
         <SummaryPanel summary={resultado.summary} />
       </div>
     {/if}

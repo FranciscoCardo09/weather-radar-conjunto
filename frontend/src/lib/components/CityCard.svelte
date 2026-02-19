@@ -1,6 +1,7 @@
 <script lang="ts">
   import { MapPin, Globe, Navigation } from 'lucide-svelte'
   import type { City } from '$lib/types'
+  import { modoOscuro } from '$lib/stores/theme'
 
   interface Props {
     city: City
@@ -17,7 +18,7 @@
   // Mapeo de imágenes de ciudades desde Google
   const imagenesDeciudades: Record<string, string> = {
     buenosaires: 'https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=800&q=80',
-    cordoba: 'https://prensa.cba.gov.ar/wp-content/uploads/2020/07/Turismo-Champaqu%C3%AD-9.jpg',
+    cordoba: 'https://fotos.perfil.com/2022/05/26/trim/1280/720/la-mona-jimenez-1362424.jpg',
     rosario: 'https://www.afa.com.ar/n/media/manager/1000/750/c/aHR0cHM6Ly93d3cuYWZhLmNvbS5hci91cGxvYWQvdGVzdC9tdXJhbC5qcGc_',
     mendoza: 'https://www.catadelvino.com/uploads/281201514034197247s.jpg',
     la_plata: 'https://turismo.laplata.gob.ar/img/la-ciudad/plaza_morenocatedral-1024x684.jpg',
@@ -46,32 +47,33 @@
   <div class="flip-card-inner">
     <!-- Front: Default card -->
     <div
-      class="flip-card-front bg-[var(--home-card-bg)] rounded-[14px] p-5 flex flex-col gap-[6px] w-full relative shadow-lg"
+      class="flip-card-front rounded-[20px] p-5 flex flex-col gap-[6px] w-full relative shadow-lg transition-all duration-300"
+      style="{$modoOscuro 
+        ? 'background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);' 
+        : 'background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);'}"
     >
       <!-- Content -->
       <div class="flex flex-col gap-[6px] w-full">
         <button
           onclick={onToggle}
           type="button"
-          class="font-display font-bold text-base text-[var(--home-text-dark)] text-left cursor-pointer hover:text-[var(--airforce-blue)] transition-colors"
+          class="font-display font-bold text-base text-left cursor-pointer transition-colors"
+          style="color: {$modoOscuro ? '#f1f5f9' : 'white'};"
         >
           {city.name}
         </button>
-        <span class="font-body text-[12px] text-[var(--home-text-light)]">
+        <span class="font-body text-[12px]" style="color: {$modoOscuro ? '#cbd5e1' : 'white'};">
           {formatearCoordenadas(city.latitude, city.longitude)}
         </span>
         <a
           href="/weather/{city.id}"
-          class="flex items-center gap-1"
+          class="flex items-center gap-1 mt-3"
           onclick={(e) => e.stopPropagation()}
         >
-          <MapPin size={11} class="text-[var(--home-text-light)]" />
-          <span class="font-body text-[12px] font-medium text-[var(--airforce-blue)]">Ver clima →</span>
+          <MapPin size={11} style="color: {$modoOscuro ? '#94a3b8' : 'white'};" />
+          <span class="font-body text-[12px] font-medium" style="color: {$modoOscuro ? '#94a3b8' : 'white'};">Ver clima →</span>
         </a>
       </div>
-      
-      <!-- Barra decorativa inferior -->
-      <div class="absolute bottom-0 left-0 right-0 h-2 rounded-b-[14px]" style="background-color: #7f9c96;"></div>
     </div>
 
     <!-- Back: Imagen de ciudad (clickeable completo) -->
