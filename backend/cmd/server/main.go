@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"weather-radar/backend/internal/handlers"
@@ -44,11 +45,6 @@ func main() {
 	// Lee el puerto donde va a correr el servidor.
 	// Si no hay variable de entorno "PORT", usa 8080 por defecto.
 	port := getEnv("PORT", "8080")
-
-	// Lee la URL del frontend (la app de React/Vue/etc que consume esta API).
-	// Esto se usa para configurar CORS (ver más abajo).
-	// Por defecto apunta a localhost:5173, que es el puerto típico de Vite en desarrollo.
-	frontendURL := getEnv("FRONTEND_URL", "http://localhost:5173")
 
 	// Inicializa el cliente HTTP que se usará para llamar a la API de Open-Meteo.
 	// Le pone un timeout de 10 segundos: si la API externa tarda más de 10 segundos
@@ -106,7 +102,10 @@ func main() {
 	//
 	// Sin esto, el navegador bloquearía todas las peticiones del frontend al backend.
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{frontendURL, "http://127.0.0.1:5173"},
+		AllowOriginFunc: func(origin string) bool {
+			return strings.HasPrefix(origin, "http://localhost:") ||
+				strings.HasPrefix(origin, "http://127.0.0.1:")
+		},
 		AllowMethods:     []string{"GET", "POST"},
 		AllowHeaders:     []string{"Origin", "Content-Type"},
 		AllowCredentials: true,
