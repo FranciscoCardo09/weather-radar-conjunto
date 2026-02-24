@@ -1,0 +1,13 @@
+[Unit]
+Description=Weather Radar Backend
+After=network.target
+
+[Service]
+ExecStart=/opt/weather-radar/backend
+WorkingDirectory=/opt/weather-radar
+EnvironmentFile=/opt/weather-radar/.env
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
